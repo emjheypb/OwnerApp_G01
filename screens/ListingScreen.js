@@ -1,9 +1,11 @@
 import { SafeAreaView, Text, StyleSheet } from "react-native";
-import { Picker } from "@react-native-picker/picker";
 import RNPickerSelect from "react-native-picker-select";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const ListingScreen = () => {
+  useEffect(() => {
+    console.log;
+  });
   const [vehicle, setVehicle] = useState("");
   const [vehiclesList, setVehiclesList] = useState([]);
   const [vehicleModelsList, setVehicleModelsList] = useState([]);

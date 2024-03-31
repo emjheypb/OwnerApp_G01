@@ -6,20 +6,14 @@ import {
 } from "@react-navigation/drawer";
 import BookingsScreen from "./BookingsScreen";
 import ListingScreen from "./ListingScreen";
-import { useEffect, useState } from "react";
-import { getUser } from "../controllers/UsersDB";
+import { useContext } from "react";
+import { UserContext } from "../controllers/UsersDB";
 import { Image } from "react-native";
 
 const Drawer = createDrawerNavigator();
 
 const HomeScreen = () => {
-  useEffect(() => {
-    getUser("owner@one.com", (user) => {
-      setCurrUser(user);
-    });
-  }, []);
-
-  const [currUser, setCurrUser] = useState(null);
+  const { currUser, setCurrUser } = useContext(UserContext);
 
   const additionalDrawerItems = (props) => {
     return (
@@ -41,7 +35,10 @@ const HomeScreen = () => {
         <DrawerItemList {...props} />
         <DrawerItem
           label="Logout"
-          onPress={() => props.navigation.popToTop()}
+          onPress={() => {
+            setCurrUser(null);
+            props.navigation.popToTop();
+          }}
         />
       </DrawerContentScrollView>
     );
