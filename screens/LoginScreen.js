@@ -2,6 +2,7 @@
 // owner@two.com - password
 
 import { SafeAreaView, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { addUsers } from "../controllers/UsersDB";
 
 const LoginScreen = ({ navigation }) => {
   const toHome = () => {
@@ -15,6 +16,9 @@ const LoginScreen = ({ navigation }) => {
       <TouchableOpacity style={styles.button} onPress={toHome}>
         <Text>L O G I N</Text>
       </TouchableOpacity>
+      {/* <TouchableOpacity style={styles.button} onPress={addUsers}>
+        <Text>ADD USERS</Text>
+      </TouchableOpacity> */}
     </SafeAreaView>
   );
 };
