@@ -16,7 +16,7 @@ export const UserProvider = (props) => {
 
 export const getUser = async (userID, _callback) => {
   try {
-    console.log("getUser", userID);
+    // console.log("getUser", userID);
     const docRef = doc(db, USERS_COLLECTION, userID);
     const docSnap = await getDoc(docRef);
 
