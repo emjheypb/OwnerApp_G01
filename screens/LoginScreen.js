@@ -7,15 +7,21 @@ import {
   StyleSheet,
   TouchableOpacity,
   TextInput,
+  Alert,
 } from "react-native";
 import { UserContext, getUser } from "../controllers/UsersDB";
 import { useContext, useState } from "react";
+import { Colors } from "react-native/Libraries/NewAppScreen";
 
 const LoginScreen = ({ navigation }) => {
   const toHome = () => {
-    getUser(email, (user) => {
-      // console.log("toHome", user);
-      if (user.type == "owner") {
+    getUser(email, password, (user) => {
+      if(user == null){
+        setError("Invalid Credentials")
+      }
+      else if (user.type == "owner") {
+        setError("")
+        alert(`Login successful!`)
         setCurrUser(user);
         navigation.navigate("Home");
       }
@@ -24,6 +30,7 @@ const LoginScreen = ({ navigation }) => {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const { setCurrUser } = useContext(UserContext);
 
   return (
@@ -43,6 +50,7 @@ const LoginScreen = ({ navigation }) => {
         autoCapitalize="none"
         secureTextEntry
       />
+      <Text style={styles.errorStyle}>{error}</Text>
       <TouchableOpacity style={styles.button} onPress={toHome}>
         <Text style={{ fontWeight: "bold" }}>L O G I N</Text>
       </TouchableOpacity>
@@ -73,4 +81,8 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     backgroundColor: "rgb(239, 239, 239)",
   },
+  errorStyle:{
+    color: "rgb(255,0,0)",
+    fontWeight: "bold"
+  }
 });

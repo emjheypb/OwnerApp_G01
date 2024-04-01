@@ -1,10 +1,12 @@
 import { createContext, useState } from "react";
-import firebaseConfig from "../config/FirebaseApp";
+import { auth, db } from "../config/FirebaseApp";
 import { getFirestore, doc, getDoc, setDoc } from "firebase/firestore";
+import { signInWithEmailAndPassword, signOut } from 'firebase/auth';
 
-const db = getFirestore(firebaseConfig);
 const USERS_COLLECTION = "Users";
+
 export const UserContext = createContext();
+
 export const UserProvider = (props) => {
   const [currUser, setCurrUser] = useState(null);
   return (
@@ -14,21 +16,26 @@ export const UserProvider = (props) => {
   );
 };
 
-export const getUser = async (userID, _callback) => {
+export const getUser = async (username, password, _callback) => {
   try {
-    // console.log("getUser", userID);
-    const docRef = doc(db, USERS_COLLECTION, userID);
-    const docSnap = await getDoc(docRef);
-
-    if (docSnap.exists()) {
-      console.log("getUser", "Document data:", docSnap.data());
-      _callback(docSnap.data());
-    } else {
-      // docSnap.data() will be undefined in this case
-      console.log("getUser", "No such document!");
+    const userCredential = await signInWithEmailAndPassword(auth, username, password);
+    try {
+      const docRef = doc(db, USERS_COLLECTION, username);
+      const docSnap = await getDoc(docRef);
+  
+      if (docSnap.exists()) {
+        console.log("getUser", "Document data:", docSnap.data());
+        _callback(docSnap.data());
+      } else {
+        console.log("getUser", "No such document!");
+      }
+    } catch (err) {
+      console.log("getUser", err);
     }
+    _callback(auth.currentUser);
   } catch (err) {
-    console.log("getUser", err);
+    _callback(null);
+    console.log("getUser", err)
   }
 };
 
