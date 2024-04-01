@@ -175,7 +175,7 @@ const styles = StyleSheet.create({
   },
   tb: {
     flex: 1,
-    padding: 5,
+    padding: 10,
     borderRadius: 10,
     backgroundColor: "rgb(239, 239, 239)",
   },

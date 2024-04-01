@@ -6,14 +6,23 @@ import {
 } from "@react-navigation/drawer";
 import BookingsScreen from "./BookingsScreen";
 import ListingScreen from "./ListingScreen";
-import { useContext } from "react";
-import { UserContext } from "../controllers/UsersDB";
+import { useContext, useEffect, useState } from "react";
+import { UserContext, getUserDetails } from "../controllers/UsersDB";
 import { Image } from "react-native";
+import { auth } from "../config/FirebaseApp";
 
 const Drawer = createDrawerNavigator();
 
 const HomeScreen = () => {
-  const { currUser, setCurrUser } = useContext(UserContext);
+  // const { currUser, setCurrUser } = useContext(UserContext);
+  useEffect(() => {
+    getUserDetails(auth.currentUser.email, (result) => {
+      // console.log("HomeScreen", result);
+      setCurrUser(result);
+    });
+  }, []);
+
+  const [currUser, setCurrUser] = useState(null);
 
   const additionalDrawerItems = (props) => {
     return (
@@ -27,7 +36,7 @@ const HomeScreen = () => {
                   ? currUser.image
                   : "https://firebasestorage.googleapis.com/v0/b/rent-an-ev-2fd04.appspot.com/o/Profile.png?alt=media&token=d73f1879-0940-46f6-bf2d-6e2dd3bba4a1",
               }}
-              style={{ width: 50, height: 50 }}
+              style={{ width: 50, height: 50, borderRadius: 25 }}
             />
           )}
           onPress={() => {}}
@@ -46,7 +55,8 @@ const HomeScreen = () => {
 
   return (
     <Drawer.Navigator drawerContent={additionalDrawerItems}>
-      <Drawer.Screen name="Listing" component={ListingScreen} />
+      <Drawer.Screen name="Create Listing" component={ListingScreen} />
+      {/* <Drawer.Screen name="My Listings" component={ListingScreen} /> */}
       <Drawer.Screen name="Bookings" component={BookingsScreen} />
     </Drawer.Navigator>
   );
