@@ -14,7 +14,7 @@ import { useContext, useState } from "react";
 const LoginScreen = ({ navigation }) => {
   const toHome = () => {
     getUser(email, (user) => {
-      console.log("toHome", user);
+      // console.log("toHome", user);
       if (user.type == "owner") {
         setCurrUser(user);
         navigation.navigate("Home");
