@@ -21,6 +21,7 @@ const LabeledTextInput = (props) => {
         onChangeText={props.onChangeText}
         autoCapitalize={props.autoCapitalize ? props.autoCapitalize : "none"}
         inputMode={props.inputMode ? props.inputMode : "text"}
+        editable={!props.disabled}
       />
     </View>
   );

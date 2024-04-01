@@ -7,6 +7,7 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   ScrollView,
+  ActivityIndicator,
 } from "react-native";
 import { useState } from "react";
 import VehicleItemList from "./components/VehicleItemList";
@@ -16,9 +17,10 @@ import { getUserDetails } from "../controllers/UsersDB";
 import { addListing } from "../controllers/ListingsDB";
 import { doForwardGeocode } from "../controllers/LocationManager";
 
-const ListingScreen = ({ navigation }) => {
+const ListingScreen = ({ route, navigation }) => {
   // #region INPUT STATES
-  const [modalVisible, setModalVisible] = useState(false);
+  const [modalVehicles, setModalVehicles] = useState(false);
+  const [loadingScreen, setLoadingScren] = useState(false);
   const [vehicle, setVehicle] = useState(null);
   const [seatCapacity, setSeatCapacity] = useState(""); // seats_max
   const [formFactor, setFormFactor] = useState(""); // form_factor
@@ -26,7 +28,6 @@ const ListingScreen = ({ navigation }) => {
   const [licensePlate, setLicensePlate] = useState("");
   const [location, setLocation] = useState("");
   const [price, setPrice] = useState("");
-  const [latLong, setLatLong] = useState(undefined);
   // #endregion
 
   // #region ERROR STATES
@@ -48,10 +49,8 @@ const ListingScreen = ({ navigation }) => {
     setElectricRange(`${selectedVehicle.electric_range}`);
   };
 
-  const validateFields = () => {
+  const validateFields = (_callback) => {
     //#region CHECKS
-    setLatLong(undefined);
-
     const vehicleCheck = vehicle === null;
     const seatCapacityCheck = seatCapacity.trim() === "";
     const formFactorCheck = formFactor.trim() === "";
@@ -59,6 +58,7 @@ const ListingScreen = ({ navigation }) => {
       electricRange.trim() === "" || isNaN(electricRange.trim());
     const licensePlateCheck = licensePlate.trim() === "";
     const priceCheck = price.trim() === "" || isNaN(price.trim());
+    const locationCheck = location.trim() === "";
     //#endregion
 
     //#region UPDATE COMPONENTS
@@ -68,69 +68,82 @@ const ListingScreen = ({ navigation }) => {
     setElectricRangeIsError(electricRangeCheck);
     setLicensePlateIsError(licensePlateCheck);
     setPriceIsError(priceCheck);
+    setLocationIsError(locationCheck);
     //#endregion
+
+    if (locationCheck) {
+      _callback(false);
+      return;
+    }
 
     // check if location is valid
     doForwardGeocode(location, (result, error) => {
       if (error === null) {
-        // console.log("postListing", JSON.stringify(result));
-        setLatLong(result);
+        // console.log("doForwardGeocode", JSON.stringify(result));
+        if (result === undefined) {
+          setLocationIsError(true);
+          _callback(false);
+          return;
+        }
+
+        _callback(
+          !vehicleCheck &&
+            !seatCapacityCheck &&
+            !formFactorCheck &&
+            !electricRangeCheck &&
+            !licensePlateCheck &&
+            !locationCheck &&
+            !priceCheck,
+          result
+        );
       } else {
-        console.log("postListing", JSON.stringify(error));
+        console.log("doForwardGeocode", error);
+        _callback(false);
       }
-
-      const locationCheck = location.trim() === "" || result === undefined;
-      setLocationIsError(locationCheck);
-
-      return (
-        !vehicleCheck &&
-        !seatCapacityCheck &&
-        !formFactorCheck &&
-        !electricRangeCheck &&
-        !licensePlateCheck &&
-        !locationCheck &&
-        !priceCheck
-      );
     });
   };
 
   const postListing = () => {
-    if (validateFields()) {
-      getUserDetails(auth.currentUser.email, (result) => {
-        if (result === null) {
-          alert("Logged out unexpectedly.");
-          navigation.popToTop();
-        } else {
-          const newPost = {
-            model: vehicle.model,
-            make: vehicle.make,
-            trim: vehicle.trim,
-            seatCapacity: seatCapacity,
-            formFactor: formFactor,
-            electricRange: electricRange,
-            licensePlate: licensePlate,
-            location: location,
-            price: price,
-            image: vehicle.images[0].url_thumbnail,
-            ownerName: result.name,
-            ownerImage: result.image,
-            ownerEmail: auth.currentUser.email,
-            status: 1,
-            latitude: latLong.latitude,
-            longitude: latLong.longitude,
-          };
+    validateFields((isValid, latLong) => {
+      if (isValid) {
+        getUserDetails(auth.currentUser.email, (result) => {
+          if (result === null) {
+            alert("Logged out unexpectedly.");
+            navigation.popToTop();
+          } else {
+            setLoadingScren(true);
+            const newPost = {
+              model: vehicle.model,
+              make: vehicle.make,
+              trim: vehicle.trim,
+              seatCapacity: seatCapacity,
+              formFactor: formFactor,
+              electricRange: electricRange,
+              licensePlate: licensePlate,
+              location: location,
+              price: price,
+              image: vehicle.images[0].url_thumbnail,
+              ownerName: result.name,
+              ownerImage: result.image,
+              ownerEmail: auth.currentUser.email,
+              status: 1,
+              latitude: latLong.latitude,
+              longitude: latLong.longitude,
+            };
+            addListing(newPost, (result) => {
+              if (result === null) {
+                resetFields();
+                alert("Listing Posted");
+              } else {
+                alert("Failed to Post Listing.");
+              }
 
-          addListing(newPost, (result) => {
-            if (result === null) {
-              resetFields();
-              alert("Listing Posted");
-            } else {
-              alert("Failed to Post Listing. Try Again Later.");
-            }
-          });
-        }
-      });
-    }
+              setLoadingScren(false);
+            });
+          }
+        });
+      }
+    });
   };
 
   const resetFields = () => {
@@ -142,7 +155,6 @@ const ListingScreen = ({ navigation }) => {
     setLicensePlate("");
     setLocation("");
     setPrice("");
-    setLatLong(undefined);
     //#endregion
 
     //#region ERROR CHECKS
@@ -161,8 +173,8 @@ const ListingScreen = ({ navigation }) => {
       <ScrollView>
         <SafeAreaView style={styles.container}>
           <VehicleItemList
-            isVisible={modalVisible}
-            setIsVisible={setModalVisible}
+            isVisible={modalVehicles}
+            setIsVisible={setModalVehicles}
             selectedVehicle={selectVehicle}
           />
 
@@ -176,7 +188,7 @@ const ListingScreen = ({ navigation }) => {
             </View>
             <TouchableOpacity
               onPress={() => {
-                setModalVisible(true);
+                setModalVehicles(true);
               }}
               style={[
                 styles.inputs,
@@ -185,7 +197,8 @@ const ListingScreen = ({ navigation }) => {
                     ? "pink"
                     : "rgb(239, 239, 239)",
                 },
-              ]}>
+              ]}
+              disabled={loadingScreen}>
               <Text style={{ color: vehicle ? "black" : "rgb(189,189,189)" }}>
                 {vehicle
                   ? `${vehicle.make} ${vehicle.model} ${vehicle.trim}`.trim()
@@ -201,6 +214,7 @@ const ListingScreen = ({ navigation }) => {
             inputMode="numeric"
             isMandatory={true}
             isError={seatCapacityIsError}
+            disabled={loadingScreen}
           />
           <LabeledTextInput
             label="Vehicle Type"
@@ -209,6 +223,7 @@ const ListingScreen = ({ navigation }) => {
             onChangeText={setFormFactor}
             isMandatory={true}
             isError={formFactorIsError}
+            disabled={loadingScreen}
           />
           <LabeledTextInput
             label="Electric Range (km)"
@@ -218,6 +233,7 @@ const ListingScreen = ({ navigation }) => {
             inputMode="numeric"
             isMandatory={true}
             isError={electricRangeIsError}
+            disabled={loadingScreen}
           />
           <LabeledTextInput
             label="License Plate"
@@ -226,6 +242,7 @@ const ListingScreen = ({ navigation }) => {
             onChangeText={setLicensePlate}
             isMandatory={true}
             isError={licensePlateIsError}
+            disabled={loadingScreen}
           />
           <LabeledTextInput
             label="Pickup Location"
@@ -235,6 +252,7 @@ const ListingScreen = ({ navigation }) => {
             isMandatory={true}
             isError={locationIsError}
             autoCapitalize="words"
+            disabled={loadingScreen}
           />
           <LabeledTextInput
             label="Rent Price (CAD)"
@@ -244,20 +262,22 @@ const ListingScreen = ({ navigation }) => {
             inputMode="numeric"
             isMandatory={true}
             isError={priceIsError}
+            disabled={loadingScreen}
           />
           {/* #endregion */}
 
+          {loadingScreen ? <ActivityIndicator size="large" /> : <Text></Text>}
+
           <TouchableOpacity
-            style={[
-              styles.button,
-              { marginTop: 25, backgroundColor: "rgb(234,196,81)" },
-            ]}
-            onPress={resetFields}>
+            style={[styles.button, { backgroundColor: "rgb(234,196,81)" }]}
+            onPress={resetFields}
+            disabled={loadingScreen}>
             <Text style={{ fontWeight: "bold" }}>R E S E T</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={[styles.button, { backgroundColor: "rgb(120, 166, 90)" }]}
-            onPress={postListing}>
+            onPress={postListing}
+            disabled={loadingScreen}>
             <Text style={{ fontWeight: "bold", color: "white" }}>P O S T</Text>
           </TouchableOpacity>
         </SafeAreaView>
