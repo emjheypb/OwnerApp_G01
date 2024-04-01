@@ -16,14 +16,15 @@ import { Colors } from "react-native/Libraries/NewAppScreen";
 const LoginScreen = ({ navigation }) => {
   const toHome = () => {
     getUser(email, password, (user) => {
-      if(user == null){
-        setError("Invalid Credentials")
-      }
-      else if (user.type == "owner") {
-        setError("")
-        alert(`Login successful!`)
+      if (user == null) {
+        setError("Invalid Credentials");
+      } else if (user.type == "owner") {
+        setError("");
+        alert(`Login successful!`);
         setCurrUser(user);
         navigation.navigate("Home");
+      } else {
+        setError("Invalid Credentials");
       }
     });
   };
@@ -52,7 +53,7 @@ const LoginScreen = ({ navigation }) => {
       />
       <Text style={styles.errorStyle}>{error}</Text>
       <TouchableOpacity style={styles.button} onPress={toHome}>
-        <Text style={{ fontWeight: "bold" }}>L O G I N</Text>
+        <Text style={{ fontWeight: "bold", color: "white" }}>L O G I N</Text>
       </TouchableOpacity>
       {/* <TouchableOpacity style={styles.button} onPress={addUsers}>
         <Text>ADD USERS</Text>
@@ -72,7 +73,7 @@ const styles = StyleSheet.create({
     width: "100%",
     padding: 10,
     borderRadius: 10,
-    backgroundColor: "rgb(226, 238, 254)",
+    backgroundColor: "rgb(120, 166, 90)",
     alignItems: "center",
   },
   tb: {
@@ -81,8 +82,8 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     backgroundColor: "rgb(239, 239, 239)",
   },
-  errorStyle:{
+  errorStyle: {
     color: "rgb(255,0,0)",
-    fontWeight: "bold"
-  }
+    fontWeight: "bold",
+  },
 });

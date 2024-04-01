@@ -1,13 +1,41 @@
-import firebaseConfig from "../config/FirebaseApp";
-import { getFirestore, collection, getDocs, addDoc } from "firebase/firestore";
+import { auth, db } from "../config/FirebaseApp";
+import { collection, getDocs, addDoc, doc, setDoc } from "firebase/firestore";
 
-const db = getFirestore(firebaseConfig);
+const LISTING_COLLECTION = "Listing";
+const USERS_COLLECTION = "Users";
 
-export const addData = async () => {
+export const addListing = async (listing, _callback) => {
   try {
-    const addedUser = await addDoc(collection(db, "Users"), user);
-    console.log("addData", addedUser);
+    const miniListing = {
+      make: listing.make,
+      model: listing.model,
+      trim: listing.trim,
+      location: listing.location,
+      price: listing.price,
+      licensePlate: listing.licensePlate,
+      status: 1,
+    };
+
+    const addedListing = await addDoc(
+      collection(db, LISTING_COLLECTION),
+      listing
+    );
+
+    await setDoc(
+      doc(
+        db,
+        USERS_COLLECTION,
+        auth.currentUser.email,
+        LISTING_COLLECTION,
+        addedListing.id
+      ),
+      miniListing
+    );
+
+    console.log("addListing", addedListing.id);
+    _callback(null);
   } catch (err) {
-    console.log("addData", err);
+    console.log("addListing", err);
+    _callback(err);
   }
 };

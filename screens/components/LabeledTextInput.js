@@ -3,9 +3,19 @@ import { Text, StyleSheet, TextInput, View } from "react-native";
 const LabeledTextInput = (props) => {
   return (
     <View>
-      <Text style={styles.label}>{props.label}</Text>
+      <View style={{ flexDirection: "row" }}>
+        {props.isMandatory ? (
+          <Text style={{ color: "red", fontWeight: "bold" }}>* </Text>
+        ) : (
+          <Text></Text>
+        )}
+        <Text style={styles.label}>{props.label}</Text>
+      </View>
       <TextInput
-        style={styles.inputs}
+        style={[
+          styles.inputs,
+          { backgroundColor: props.isError ? "pink" : "rgb(239, 239, 239)" },
+        ]}
         placeholder={props.placeholder}
         value={props.value}
         onChangeText={props.onChangeText}
@@ -24,7 +34,6 @@ const styles = StyleSheet.create({
   },
   inputs: {
     padding: 10,
-    backgroundColor: "rgb(239, 239, 239)",
     borderRadius: 10,
   },
 });
