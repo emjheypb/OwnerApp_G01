@@ -7,7 +7,7 @@ import {
 import BookingsScreen from "./BookingsScreen";
 import ListingScreen from "./ListingScreen";
 import { useContext, useEffect, useState } from "react";
-import { UserContext, getUserDetails } from "../controllers/UsersDB";
+import { UserContext, getUserDetails, logOutUser } from "../controllers/UsersDB";
 import { Image } from "react-native";
 import { auth } from "../config/FirebaseApp";
 
@@ -46,6 +46,7 @@ const HomeScreen = () => {
           label="Logout"
           onPress={() => {
             setCurrUser(null);
+            logOutUser();
             props.navigation.popToTop();
           }}
         />

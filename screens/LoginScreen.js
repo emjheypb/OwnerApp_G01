@@ -9,7 +9,7 @@ import {
   TextInput,
   Alert,
 } from "react-native";
-import { UserContext, getUser } from "../controllers/UsersDB";
+import { getUser } from "../controllers/UsersDB";
 import { useContext, useState } from "react";
 import { Colors } from "react-native/Libraries/NewAppScreen";
 
@@ -21,7 +21,7 @@ const LoginScreen = ({ navigation }) => {
       } else if (user.type == "owner") {
         setError("");
         alert(`Login successful!`);
-        setCurrUser(user);
+        //setCurrUser(user);
         navigation.navigate("Home");
       } else {
         setError("Invalid Credentials");
@@ -32,7 +32,7 @@ const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const { setCurrUser } = useContext(UserContext);
+  //const { setCurrUser } = useContext(UserContext);
 
   return (
     <SafeAreaView style={[styles.content, { gap: 10 }]}>
