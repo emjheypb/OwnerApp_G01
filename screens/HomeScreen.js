@@ -7,9 +7,14 @@ import {
 import BookingsScreen from "./BookingsScreen";
 import ListingScreen from "./ListingScreen";
 import { useContext, useEffect, useState } from "react";
-import { UserContext, getUserDetails, logOutUser } from "../controllers/UsersDB";
+import {
+  UserContext,
+  getUserDetails,
+  logOutUser,
+} from "../controllers/UsersDB";
 import { Image } from "react-native";
 import { auth } from "../config/FirebaseApp";
+import { unsubsribe } from "../controllers/BookingsDB";
 
 const Drawer = createDrawerNavigator();
 
@@ -45,6 +50,7 @@ const HomeScreen = () => {
         <DrawerItem
           label="Logout"
           onPress={() => {
+            unsubsribe();
             setCurrUser(null);
             logOutUser();
             props.navigation.popToTop();

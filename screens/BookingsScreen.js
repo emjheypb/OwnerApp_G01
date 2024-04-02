@@ -1,13 +1,38 @@
-import { SafeAreaView, Text, StyleSheet } from "react-native";
+import { useEffect, useState } from "react";
+import {
+  SafeAreaView,
+  FlatList,
+  StyleSheet,
+  TouchableOpacity,
+  Text,
+} from "react-native";
+import { getBooking, unsubsribe } from "../controllers/BookingsDB";
 
 const BookingsScreen = ({ navigation }) => {
-  const logout = () => {
-    navigation.popToTop();
-  };
+  useEffect(() => {
+    getBooking((booking) => {
+      setBookings(booking);
+    });
+  }, []);
+
+  const [bookings, setBookings] = useState([]);
+
+  const renderListItem = ({ item }) => (
+    <TouchableOpacity>
+      <Text>{item.id}</Text>
+    </TouchableOpacity>
+  );
 
   return (
     <SafeAreaView>
-      <Text>Booking</Text>
+      <FlatList
+        style={styles.flatList}
+        data={bookings}
+        renderItem={(item) => renderListItem(item)}
+        key={(item) => {
+          item.id;
+        }}
+      />
     </SafeAreaView>
   );
 };
@@ -21,5 +46,10 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     backgroundColor: "lightblue",
     alignItems: "center",
+  },
+  flatList: {
+    alignContent: "stretch",
+    width: "100%",
+    marginBottom: 10,
   },
 });
