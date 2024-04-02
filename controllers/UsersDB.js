@@ -5,7 +5,7 @@ import { signInWithEmailAndPassword, signOut } from "firebase/auth";
 
 const USERS_COLLECTION = "Users";
 
-export const UserContext = createContext();
+/*export const UserContext = createContext();
 
 export const UserProvider = (props) => {
   const [currUser, setCurrUser] = useState(null);
@@ -14,7 +14,7 @@ export const UserProvider = (props) => {
       {props.children}
     </UserContext.Provider>
   );
-};
+};*/
 
 export const getUser = async (username, password, _callback) => {
   try {
@@ -61,6 +61,21 @@ export const getUserDetails = async (username, _callback) => {
     _callback(null);
   }
 };
+
+export const logOutUser = async () => {
+  try {
+    // 1. check if a user is currently logged in
+    if (auth.currentUser === null) {
+      console.log("logOutUser", "Sorry, no user is logged in.")
+    }
+    else {
+      await signOut(auth)
+      console.log("logOutUser", "Logout complete!")
+    }
+  } catch (err) {
+    console.log(err)
+  }
+}
 
 export const addUsers = async () => {
   const users = [

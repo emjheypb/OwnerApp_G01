@@ -3,7 +3,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { View } from "react-native";
 import LoginScreen from "./screens/LoginScreen";
 import HomeScreen from "./screens/HomeScreen";
-import { UserProvider } from "./controllers/UsersDB";
+//import { UserProvider } from "./controllers/UsersDB";
 
 const Stack = createNativeStackNavigator();
 
@@ -17,7 +17,7 @@ const MyTheme = {
 
 const App = () => {
   return (
-    <UserProvider>
+    //<UserProvider>
       <NavigationContainer theme={MyTheme}>
         <Stack.Navigator>
           <Stack.Screen
@@ -32,7 +32,7 @@ const App = () => {
           />
         </Stack.Navigator>
       </NavigationContainer>
-    </UserProvider>
+    //</UserProvider>
   );
 };
 
