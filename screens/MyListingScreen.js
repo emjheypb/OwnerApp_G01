@@ -25,8 +25,8 @@ const MyListingScreen = () => {
   }, []);
 
   const selectListing = (item) => {
-    console.log("selectListing", item);
-    deleteListing(item.id, item.data);
+    // console.log("selectListing", item);
+    deleteListing(item.id, item.data, Number(!item.data.status));
   };
 
   const renderListItem = ({ item }) => (
@@ -40,7 +40,9 @@ const MyListingScreen = () => {
         <Text style={styles.listTitle}>
           {item.data.make} {item.data.model} ({item.data.licensePlate})
         </Text>
-        <Text style={styles.subtitle}>{item.id}</Text>
+        <Text style={styles.subtitle}>
+          {item.data.status ? "Active" : "Inactive"} - {item.id}
+        </Text>
         <Text>$ {item.data.price}</Text>
         <Text>Location: {item.data.location}</Text>
         <Text>Seat Capacity: {item.data.seatCapacity}</Text>
@@ -50,7 +52,9 @@ const MyListingScreen = () => {
       <TouchableOpacity onPress={() => selectListing(item)}>
         <Image
           source={{
-            uri: "https://cdn-icons-png.flaticon.com/512/3807/3807871.png",
+            uri: item.data.status
+              ? "https://cdn-icons-png.flaticon.com/512/3807/3807871.png"
+              : "https://static.vecteezy.com/system/resources/previews/033/245/519/original/recycle-icon-recycling-garbage-symbol-environment-for-graphic-design-logo-web-site-social-media-mobile-app-ui-illustration-png.png",
           }}
           style={{ width: 25, height: 25, margin: 10 }}
         />
