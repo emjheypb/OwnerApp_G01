@@ -11,11 +11,11 @@ import {
 import { useEffect, useState } from "react";
 import { fetchVehicles } from "../controllers/VehiclesAPI";
 import { deleteListing, getListing } from "../controllers/ListingsDB";
+import SegmentedControl from "@react-native-segmented-control/segmented-control";
 
 const MyListingScreen = () => {
   const [vehiclesList, setVehiclesList] = useState([]);
-  const [filteredVehiclesList, setFilteredVehiclesList] = useState([]);
-  const [filter, setFilter] = useState("");
+  const [statusFilterIndex, setStatusFilterIndex] = useState(1);
 
   useEffect(() => {
     getListing((listing) => {
@@ -62,32 +62,32 @@ const MyListingScreen = () => {
     </View>
   );
 
-  const applyFilter = (text) => {
-    setFilter(text);
-
-    setFilteredVehiclesList(
-      vehiclesList.filter((item) => {
-        return (
-          item.make.toLowerCase().includes(text.toLowerCase()) ||
-          item.model.toLowerCase().includes(text.toLowerCase()) ||
-          item.trim.toLowerCase().includes(text.toLowerCase()) ||
-          item.form_factor.toLowerCase().includes(text.toLowerCase())
-        );
-      })
-    );
-  };
-
   return (
     <SafeAreaView style={styles.centeredView}>
       {/* BODY */}
-      <FlatList
-        style={styles.flatList}
-        data={filter ? filteredVehiclesList : vehiclesList}
-        renderItem={(item) => renderListItem(item)}
-        key={(item) => {
-          item.mal_id;
+      <SegmentedControl
+        values={["Removed", "Available"]}
+        selectedIndex={statusFilterIndex}
+        onChange={(event) => {
+          setStatusFilterIndex(event.nativeEvent.selectedSegmentIndex);
         }}
       />
+      {!vehiclesList.filter((item) => {
+        return item.data.status === statusFilterIndex;
+      }).length ? (
+        <Text style={{ fontWeight: "bold" }}>NO LISTING</Text>
+      ) : (
+        <FlatList
+          style={styles.flatList}
+          data={vehiclesList.filter((item) => {
+            return item.data.status === statusFilterIndex;
+          })}
+          renderItem={(item) => renderListItem(item)}
+          key={(item) => {
+            item.mal_id;
+          }}
+        />
+      )}
     </SafeAreaView>
   );
 };
@@ -122,7 +122,6 @@ const styles = StyleSheet.create({
   flatList: {
     alignContent: "stretch",
     width: "100%",
-    marginBottom: 10,
   },
   listItem: {
     flexDirection: "row",
@@ -146,5 +145,10 @@ const styles = StyleSheet.create({
   subtitle: {
     fontSize: 10,
     color: "gray",
+  },
+  centeredView: {
+    height: "100%",
+    margin: 10,
+    gap: 10,
   },
 });
