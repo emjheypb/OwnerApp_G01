@@ -137,6 +137,7 @@ const BookingDetails = (props) => {
                 {details.date ? details.date.toDate().toDateString() : ""}
               </Text>
               <Text>$ {details.price}</Text>
+              <Text>{details.pickupLocation}</Text>
             </View>
 
             <View>
