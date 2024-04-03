@@ -7,7 +7,8 @@ import {
   StyleSheet,
   TouchableOpacity,
   TextInput,
-  Alert,
+  View,
+  Image,
 } from "react-native";
 import { getUser } from "../controllers/UsersDB";
 import { useContext, useState } from "react";
@@ -40,6 +41,17 @@ const LoginScreen = ({ navigation }) => {
 
   return (
     <SafeAreaView style={[styles.content, { gap: 10 }]}>
+      <Image
+        style={{ width: "100%", height: 250 }}
+        resizeMode="stretch"
+        source={{
+          uri: "https://www.dailyfreepsd.com/wp-content/uploads/2014/03/Moving-Car-Animation-Photoshop-PSD.gif",
+        }}
+      />
+      <View style={{ alignItems: "center" }}>
+        <Text style={styles.title}>RentEV</Text>
+        <Text style={styles.subtitle}>Owner Application</Text>
+      </View>
       <TextInput
         style={styles.tb}
         placeholder="Email"
@@ -77,8 +89,9 @@ export default LoginScreen;
 
 const styles = StyleSheet.create({
   content: {
-    margin: 10,
+    marginHorizontal: 10,
     alignItems: "center",
+    height: "100%",
   },
   button: {
     width: "100%",
@@ -86,6 +99,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     backgroundColor: "rgb(120, 166, 90)",
     alignItems: "center",
+    marginTop: 25,
   },
   tb: {
     width: "100%",
@@ -96,5 +110,13 @@ const styles = StyleSheet.create({
   errorStyle: {
     color: "rgb(255,0,0)",
     fontWeight: "bold",
+  },
+  title: {
+    fontWeight: "bold",
+    fontSize: 30,
+  },
+  subtitle: {
+    fontSize: 12,
+    color: "gray",
   },
 });

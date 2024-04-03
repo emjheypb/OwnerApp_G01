@@ -55,15 +55,15 @@ const HomeScreen = ({ route, navigation }) => {
   return (
     <Drawer.Navigator drawerContent={additionalDrawerItems}>
       <Drawer.Screen
-        name="Create Listing"
-        initialParams={{ user: route.params.user }}
-        component={ListingScreen}
-      />
-      {/* <Drawer.Screen name="My Listings" component={ListingScreen} /> */}
-      <Drawer.Screen
         name="Bookings"
         initialParams={{ user: route.params.user }}
         component={BookingsScreen}
+      />
+      {/* <Drawer.Screen name="My Listings" component={ListingScreen} /> */}
+      <Drawer.Screen
+        name="Create Listing"
+        initialParams={{ user: route.params.user }}
+        component={ListingScreen}
       />
     </Drawer.Navigator>
   );
