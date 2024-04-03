@@ -17,11 +17,13 @@ const LoginScreen = ({ navigation }) => {
   const toHome = async () => {
     try {
       const user = await getUser(email, password);
-      
+
       if (user && user.type === "owner") {
         setError(false);
         alert(`Login successful!`);
-        navigation.navigate("Home");
+        navigation.navigate("Home", {
+          user: user,
+        });
       } else {
         setError(true);
       }
@@ -45,7 +47,8 @@ const LoginScreen = ({ navigation }) => {
         onChangeText={(text) => {
           setEmail(text);
           setError(false); // Clear error when typing
-        }}          autoCapitalize="none"
+        }}
+        autoCapitalize="none"
       />
       <TextInput
         style={styles.tb}
@@ -54,13 +57,14 @@ const LoginScreen = ({ navigation }) => {
         onChangeText={(text) => {
           setPassword(text);
           setError(false); // Clear error when typing
-        }}          autoCapitalize="none"
+        }}
+        autoCapitalize="none"
         secureTextEntry
       />
       {error && ( // Display error text only when error is true
-    <Text style={styles.errorStyle}>Invalid Credentials</Text>
-     )}
-    <TouchableOpacity style={styles.button} onPress={toHome}>
+        <Text style={styles.errorStyle}>Invalid Credentials</Text>
+      )}
+      <TouchableOpacity style={styles.button} onPress={toHome}>
         <Text style={{ fontWeight: "bold", color: "white" }}>L O G I N</Text>
       </TouchableOpacity>
       {/* <TouchableOpacity style={styles.button} onPress={addUsers}>

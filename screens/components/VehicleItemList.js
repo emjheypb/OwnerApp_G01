@@ -88,6 +88,7 @@ const VehicleItemList = (props) => {
       }}>
       <SafeAreaView style={styles.centeredView}>
         <View style={styles.modalView}>
+          {/* HEADER */}
           <View
             style={{
               flexDirection: "row",
@@ -114,6 +115,7 @@ const VehicleItemList = (props) => {
             </TouchableOpacity>
           </View>
 
+          {/* SEARCH BOX */}
           <View
             style={{
               width: "100%",
@@ -138,6 +140,7 @@ const VehicleItemList = (props) => {
             />
           </View>
 
+          {/* BODY */}
           <FlatList
             style={styles.flatList}
             data={filter ? filteredVehiclesList : vehiclesList}

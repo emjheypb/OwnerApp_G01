@@ -7,19 +7,16 @@ import {
 import BookingsScreen from "./BookingsScreen";
 import ListingScreen from "./ListingScreen";
 import { useContext, useEffect, useState } from "react";
-import { UserContext, getUserDetails, logOutUser } from "../controllers/UsersDB";
+import { logOutUser } from "../controllers/UsersDB";
 import { Image } from "react-native";
-import { auth } from "../config/FirebaseApp";
+import { unsubsribe } from "../controllers/BookingsDB";
 
 const Drawer = createDrawerNavigator();
 
-const HomeScreen = () => {
+const HomeScreen = ({ route, navigation }) => {
   // const { currUser, setCurrUser } = useContext(UserContext);
   useEffect(() => {
-    getUserDetails(auth.currentUser.email, (result) => {
-      // console.log("HomeScreen", result);
-      setCurrUser(result);
-    });
+    setCurrUser(route.params.user);
   }, []);
 
   const [currUser, setCurrUser] = useState(null);
@@ -45,6 +42,7 @@ const HomeScreen = () => {
         <DrawerItem
           label="Logout"
           onPress={() => {
+            unsubsribe();
             setCurrUser(null);
             logOutUser();
             props.navigation.popToTop();
@@ -56,9 +54,17 @@ const HomeScreen = () => {
 
   return (
     <Drawer.Navigator drawerContent={additionalDrawerItems}>
-      <Drawer.Screen name="Create Listing" component={ListingScreen} />
+      <Drawer.Screen
+        name="Create Listing"
+        initialParams={{ user: route.params.user }}
+        component={ListingScreen}
+      />
       {/* <Drawer.Screen name="My Listings" component={ListingScreen} /> */}
-      <Drawer.Screen name="Bookings" component={BookingsScreen} />
+      <Drawer.Screen
+        name="Bookings"
+        initialParams={{ user: route.params.user }}
+        component={BookingsScreen}
+      />
     </Drawer.Navigator>
   );
 };
