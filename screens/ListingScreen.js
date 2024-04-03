@@ -13,7 +13,6 @@ import { useState } from "react";
 import VehicleItemList from "./components/VehicleItemList";
 import LabeledTextInput from "./components/LabeledTextInput";
 import { auth } from "../config/FirebaseApp";
-import { getUserDetails } from "../controllers/UsersDB";
 import { addListing } from "../controllers/ListingsDB";
 import { doForwardGeocode } from "../controllers/LocationManager";
 
@@ -106,41 +105,35 @@ const ListingScreen = ({ route, navigation }) => {
   const postListing = () => {
     validateFields((isValid, latLong) => {
       if (isValid) {
-        getUserDetails(auth.currentUser.email, (result) => {
+        const user = route.params.user;
+        setLoadingScren(true);
+        const newPost = {
+          model: vehicle.model,
+          make: vehicle.make,
+          trim: vehicle.trim,
+          seatCapacity: Number(seatCapacity),
+          formFactor: formFactor,
+          electricRange: Number(electricRange),
+          licensePlate: licensePlate,
+          location: location,
+          price: Number(price),
+          image: vehicle.images[0].url_thumbnail,
+          ownerName: user.name,
+          ownerImage: user.image,
+          ownerEmail: auth.currentUser.email,
+          status: 1,
+          latitude: latLong.latitude,
+          longitude: latLong.longitude,
+        };
+        addListing(newPost, (result) => {
           if (result === null) {
-            alert("Logged out unexpectedly.");
-            navigation.popToTop();
+            resetFields();
+            alert("Listing Posted");
           } else {
-            setLoadingScren(true);
-            const newPost = {
-              model: vehicle.model,
-              make: vehicle.make,
-              trim: vehicle.trim,
-              seatCapacity: Number(seatCapacity),
-              formFactor: formFactor,
-              electricRange: Number(electricRange),
-              licensePlate: licensePlate,
-              location: location,
-              price: Number(price),
-              image: vehicle.images[0].url_thumbnail,
-              ownerName: result.name,
-              ownerImage: result.image,
-              ownerEmail: auth.currentUser.email,
-              status: 1,
-              latitude: latLong.latitude,
-              longitude: latLong.longitude,
-            };
-            addListing(newPost, (result) => {
-              if (result === null) {
-                resetFields();
-                alert("Listing Posted");
-              } else {
-                alert("Failed to Post Listing.");
-              }
-
-              setLoadingScren(false);
-            });
+            alert("Failed to Post Listing.");
           }
+
+          setLoadingScren(false);
         });
       }
     });
@@ -172,6 +165,7 @@ const ListingScreen = ({ route, navigation }) => {
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <ScrollView>
         <SafeAreaView style={styles.container}>
+          {/* SELECT VEHICLE */}
           <VehicleItemList
             isVisible={modalVehicles}
             setIsVisible={setModalVehicles}
@@ -268,6 +262,7 @@ const ListingScreen = ({ route, navigation }) => {
 
           {loadingScreen ? <ActivityIndicator size="large" /> : <Text></Text>}
 
+          {/* BUTTONS */}
           <TouchableOpacity
             style={[styles.button, { backgroundColor: "rgb(234,196,81)" }]}
             onPress={resetFields}

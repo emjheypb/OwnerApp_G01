@@ -14,24 +14,28 @@ import { useContext, useState } from "react";
 import { Colors } from "react-native/Libraries/NewAppScreen";
 
 const LoginScreen = ({ navigation }) => {
-  const toHome = () => {
-    getUser(email, password, (user) => {
-      if (user == null) {
-        setError("Invalid Credentials");
-      } else if (user.type == "owner") {
-        setError("");
+  const toHome = async () => {
+    try {
+      const user = await getUser(email, password);
+
+      if (user && user.type === "owner") {
+        setError(false);
         alert(`Login successful!`);
-        //setCurrUser(user);
-        navigation.navigate("Home");
+        navigation.navigate("Home", {
+          user: user,
+        });
       } else {
-        setError("Invalid Credentials");
+        setError(true);
       }
-    });
+    } catch (error) {
+      console.error("Error logging in:", error);
+      setError(true);
+    }
   };
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [error, setError] = useState(false);
   //const { setCurrUser } = useContext(UserContext);
 
   return (
@@ -40,18 +44,26 @@ const LoginScreen = ({ navigation }) => {
         style={styles.tb}
         placeholder="Email"
         value={email}
-        onChangeText={setEmail}
+        onChangeText={(text) => {
+          setEmail(text);
+          setError(false); // Clear error when typing
+        }}
         autoCapitalize="none"
       />
       <TextInput
         style={styles.tb}
         placeholder="Password"
         value={password}
-        onChangeText={setPassword}
+        onChangeText={(text) => {
+          setPassword(text);
+          setError(false); // Clear error when typing
+        }}
         autoCapitalize="none"
         secureTextEntry
       />
-      <Text style={styles.errorStyle}>{error}</Text>
+      {error && ( // Display error text only when error is true
+        <Text style={styles.errorStyle}>Invalid Credentials</Text>
+      )}
       <TouchableOpacity style={styles.button} onPress={toHome}>
         <Text style={{ fontWeight: "bold", color: "white" }}>L O G I N</Text>
       </TouchableOpacity>
@@ -61,7 +73,6 @@ const LoginScreen = ({ navigation }) => {
     </SafeAreaView>
   );
 };
-
 export default LoginScreen;
 
 const styles = StyleSheet.create({

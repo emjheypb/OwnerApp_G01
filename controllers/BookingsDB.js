@@ -7,6 +7,7 @@ import {
   onSnapshot,
   doc,
   setDoc,
+  orderBy,
 } from "firebase/firestore";
 
 const BOOKING_COLLECTION = "Booking";
@@ -15,7 +16,8 @@ let currSnapshot = null;
 export const getBooking = async (_callback) => {
   const q = query(
     collection(db, BOOKING_COLLECTION),
-    where("ownerID", "==", auth.currentUser.email)
+    where("ownerID", "==", auth.currentUser.email),
+    orderBy("date")
   );
 
   currSnapshot = onSnapshot(
@@ -58,14 +60,14 @@ export const getBookingDetails = async (id, _callback) => {
   }
 };
 
-export const updateListing = async (id, listing, _callback) => {
+export const updateBooking = async (id, listing, _callback) => {
   try {
-    await setDoc(collection(db, BOOKING_COLLECTION, id), listing);
+    await setDoc(doc(db, BOOKING_COLLECTION, id), listing);
 
-    console.log("updateListing", id);
-    _callback(null);
+    // console.log("updateBooking", id);
+    _callback(true);
   } catch (err) {
-    console.log("updateListing", err);
-    _callback(err);
+    console.log("updateBooking", err);
+    _callback(false);
   }
 };
