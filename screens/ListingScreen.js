@@ -224,7 +224,7 @@ const ListingScreen = ({ route, navigation }) => {
             placeholder="Enter electric range (km)"
             value={electricRange}
             onChangeText={setElectricRange}
-            inputMode="numeric"
+            inputMode="decimal"
             isMandatory={true}
             isError={electricRangeIsError}
             disabled={loadingScreen}
@@ -253,7 +253,7 @@ const ListingScreen = ({ route, navigation }) => {
             placeholder="Enter rent price (CAD)"
             value={price}
             onChangeText={setPrice}
-            inputMode="numeric"
+            inputMode="decimal"
             isMandatory={true}
             isError={priceIsError}
             disabled={loadingScreen}
