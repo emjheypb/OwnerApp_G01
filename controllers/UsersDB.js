@@ -30,7 +30,7 @@ export const getUser = async (username, password) => {
       const docSnap = await getDoc(docRef);
 
       if (docSnap.exists()) {
-        console.log("getUser", "Document data:", docSnap.data());
+        // console.log("getUser", "Document data:", docSnap.data());
         return docSnap.data();
       } else {
         console.log("getUser", "No such document!");
@@ -69,16 +69,15 @@ export const logOutUser = async () => {
   try {
     // 1. check if a user is currently logged in
     if (auth.currentUser === null) {
-      console.log("logOutUser", "Sorry, no user is logged in.")
-    }
-    else {
-      await signOut(auth)
-      console.log("logOutUser", "Logout complete!")
+      console.log("logOutUser", "Sorry, no user is logged in.");
+    } else {
+      await signOut(auth);
+      console.log("logOutUser", "Logout complete!");
     }
   } catch (err) {
-    console.log(err)
+    console.log(err);
   }
-}
+};
 
 export const addUsers = async () => {
   const users = [

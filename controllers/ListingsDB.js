@@ -28,12 +28,12 @@ export const addListing = async (listing, _callback) => {
   }
 };
 
-export const deleteListing = async (id, listing) => {
+export const deleteListing = async (id, listing, status) => {
   try {
-    listing.status = 0;
+    listing.status = status;
     await setDoc(doc(db, LISTING_COLLECTION, id), listing);
 
-    console.log("deleteListing", id);
+    // console.log("deleteListing", id);
   } catch (err) {
     console.log("deleteListing", err);
   }
@@ -43,7 +43,7 @@ export const getListing = async (_callback) => {
   const q = query(
     collection(db, LISTING_COLLECTION),
     where("ownerEmail", "==", auth.currentUser.email),
-    where("status", "==", 1),
+    orderBy("status", "desc"),
     orderBy("make")
   );
 
