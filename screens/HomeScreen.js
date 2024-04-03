@@ -6,10 +6,12 @@ import {
 } from "@react-navigation/drawer";
 import BookingsScreen from "./BookingsScreen";
 import ListingScreen from "./ListingScreen";
+import MyListingScreen from "./MyListingScreen";
 import { useContext, useEffect, useState } from "react";
 import { logOutUser } from "../controllers/UsersDB";
 import { Image } from "react-native";
 import { unsubsribe } from "../controllers/BookingsDB";
+import { unsubsribeListing } from "../controllers/ListingsDB";
 
 const Drawer = createDrawerNavigator();
 
@@ -43,6 +45,7 @@ const HomeScreen = ({ route, navigation }) => {
           label="Logout"
           onPress={() => {
             unsubsribe();
+            unsubsribeListing();
             setCurrUser(null);
             logOutUser();
             props.navigation.popToTop();
@@ -59,7 +62,7 @@ const HomeScreen = ({ route, navigation }) => {
         initialParams={{ user: route.params.user }}
         component={BookingsScreen}
       />
-      {/* <Drawer.Screen name="My Listings" component={ListingScreen} /> */}
+      <Drawer.Screen name="My Listings" component={MyListingScreen} />
       <Drawer.Screen
         name="Create Listing"
         initialParams={{ user: route.params.user }}

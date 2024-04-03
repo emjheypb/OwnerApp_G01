@@ -1,7 +1,17 @@
 import { auth, db } from "../config/FirebaseApp";
-import { collection, getDocs, addDoc, doc, setDoc } from "firebase/firestore";
+import {
+  collection,
+  query,
+  addDoc,
+  doc,
+  setDoc,
+  where,
+  orderBy,
+  onSnapshot,
+} from "firebase/firestore";
 
 const LISTING_COLLECTION = "Listing";
+let currSnapshot = null;
 
 export const addListing = async (listing, _callback) => {
   try {
@@ -16,4 +26,44 @@ export const addListing = async (listing, _callback) => {
     console.log("addListing", err);
     _callback(err);
   }
+};
+
+export const deleteListing = async (id, listing) => {
+  try {
+    listing.status = 0;
+    await setDoc(doc(db, LISTING_COLLECTION, id), listing);
+
+    console.log("deleteListing", id);
+  } catch (err) {
+    console.log("deleteListing", err);
+  }
+};
+
+export const getListing = async (_callback) => {
+  const q = query(
+    collection(db, LISTING_COLLECTION),
+    where("ownerEmail", "==", auth.currentUser.email),
+    where("status", "==", 1),
+    orderBy("make")
+  );
+
+  currSnapshot = onSnapshot(
+    q,
+    (querySnapshot) => {
+      const listing = [];
+      querySnapshot.forEach((doc) => {
+        listing.push({ id: doc.id, data: doc.data() });
+      });
+      //   console.log("getListing", listing);
+      _callback(listing);
+    },
+    (error) => {
+      console.log("getListing", error);
+    }
+  );
+};
+
+export const unsubsribeListing = () => {
+  console.log("unsubsribeListing");
+  currSnapshot();
 };
